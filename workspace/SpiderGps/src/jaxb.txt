@@ -1,0 +1,5 @@
+To generate java files for kml, gpx, tcx (jaxb):
+
+xjc -p org.klipdev.gpx gpx.xsd
+xjc -b bindings.jxb ogckml22.xsd
+xjc -p org.klipdev.tcx TrainingCenterDatabasev2.xsd
