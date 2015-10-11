@@ -31,6 +31,7 @@ import org.klipdev.tcx.ActivityListT;
 import org.klipdev.tcx.ActivityT;
 import org.klipdev.tcx.ExtensionsT;
 import org.klipdev.tcx.HeartRateInBeatsPerMinuteT;
+import org.klipdev.tcx.PositionT;
 import org.klipdev.tcx.SportT;
 import org.klipdev.tcx.TrackT;
 import org.klipdev.tcx.TrackpointT;
@@ -64,6 +65,8 @@ public class SGMain {
 		// TODO: find how to open html file from the package
 		browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/gmaps.html");
 		//browser.loadURL("http://www.google.com");
+		
+		browser.reload();
 	}
 
 	JMenuBar buildMenuBar() {
@@ -107,11 +110,13 @@ public class SGMain {
 	    	public void actionPerformed(ActionEvent e) {
 				JAXBContext jc;
 				try {
+					SGPath path = new SGPath("/Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/miniere.tcx", 1000 );
+					
 					jc = JAXBContext.newInstance(TrainingCenterDatabaseT.class);
 					Unmarshaller u = jc.createUnmarshaller();
 					JAXBElement doc = (JAXBElement) u.unmarshal(new FileInputStream("/Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/miniere.tcx"));
 					TrainingCenterDatabaseT tcdb = (TrainingCenterDatabaseT) doc.getValue();
-
+					
 					ActivityListT activityList = tcdb.getActivities();
 					List<ActivityT> activityL = activityList.getActivity();
 					for (ActivityT activity : activityL) {
@@ -131,6 +136,14 @@ public class SGMain {
 									if ( hr != null ) {
 										System.out.println("  Heart Rate " + hr.getValue());
 									}
+									
+									
+									// CREATE GPPath OBJECT
+									/////////////////////////
+									PositionT pos = trackPoint.getPosition();
+									if ( pos != null ) {
+										path.addPosition(pos.getLatitudeDegrees(), pos.getLongitudeDegrees(), trackPoint.getAltitudeMeters());
+									}
 /*
 									// <Extensions><TPX xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v2"><Watts>60</Watts></TPX></Extensions>
 									ExtensionsT ext = trackPoint.getExtensions();
@@ -149,6 +162,7 @@ public class SGMain {
 		 
 						}
 					}
+					System.out.println( path.getStatsAsString());
 				} catch (JAXBException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
