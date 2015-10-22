@@ -10,9 +10,11 @@ import java.awt.event.KeyEvent;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -38,17 +40,24 @@ import org.klipdev.tcx.TrackpointT;
 import org.klipdev.tcx.TrainingCenterDatabaseT;
 
 public class SGMain {
-
+	final Browser browser= new Browser();
+	JLabel mapLabel;
 	SGMain() {
 	}
 
 	void buildGUI() {
-		final Browser browser = new Browser();
+		//browser = new Browser();
 		BrowserView browserView = new BrowserView(browser);
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		mainPanel.add(buildTablePanel(), BorderLayout.WEST);
-		mainPanel.add(browserView, BorderLayout.CENTER);
+
+		JPanel mapPanel = new JPanel( new BorderLayout() );
+		mapPanel.add( mapLabel = new JLabel("aa"), BorderLayout.NORTH );
+		mapPanel.add(browserView, BorderLayout.CENTER);
+
+		mainPanel.add( mapPanel, BorderLayout.CENTER );
+
 		//mainPanel.add(browserView, BorderLayout.CENTER);
 		mainPanel.add(buildTestPanel(), BorderLayout.SOUTH);
 		
@@ -63,10 +72,11 @@ public class SGMain {
 		frame.setVisible(true);
 		
 		// TODO: find how to open html file from the package
-		browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/gmaps.html");
-		//browser.loadURL("http://www.google.com");
-		
+//		browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/gmaps.html");
+//		browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/web/testleaflet.html");
+		browser.loadURL("http://www.google.com");
 		browser.reload();
+		mapLabel.setText(browser.getURL());
 	}
 
 	JMenuBar buildMenuBar() {
@@ -103,14 +113,47 @@ public class SGMain {
 	JPanel buildTestPanel() {
 		// TST: panel pour tests uniquement
 		JPanel p = new JPanel();
+
 		JButton b = new JButton("parse tcx");
 		p.add(b);
-		
-	    b.addActionListener(new ActionListener() {
+
+		JButton rld = new JButton("reload gmaps");
+		p.add(rld);
+
+		JButton leaf = new JButton("reload leaflet");
+		p.add(leaf);
+
+		rld.addActionListener( new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/gmaps.html");
+				//browser.reloadIgnoringCache();
+				mapLabel.setText(browser.getURL());
+			}
+		});
+
+		leaf.addActionListener( new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/web/testleaflet.html");
+				//browser.reloadIgnoringCache();
+				mapLabel.setText(browser.getURL());
+			}
+		});
+
+
+/*
+		var polygon = L.polygon([
+		                         [51.509, -0.08],
+		                         [51.503, -0.06],
+		                         [51.51, -0.047]
+		                     ]).addTo(map);
+*/
+		b.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-				JAXBContext jc;
+	    		JAXBContext jc;
 				try {
-					SGPath path = new SGPath("/Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/miniere.tcx", 1000 );
+		    		String js = new String("var polyline = L.polyline([");
+		    		
+		    		SGPath path = new SGPath("/Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/miniere.tcx", 1000 );
 					
 					jc = JAXBContext.newInstance(TrainingCenterDatabaseT.class);
 					Unmarshaller u = jc.createUnmarshaller();
@@ -143,6 +186,11 @@ public class SGMain {
 									PositionT pos = trackPoint.getPosition();
 									if ( pos != null ) {
 										path.addPosition(pos.getLatitudeDegrees(), pos.getLongitudeDegrees(), trackPoint.getAltitudeMeters());
+										//js.concat( String.format("[%f, %f],", pos.getLatitudeDegrees(), pos.getLongitudeDegrees()) );
+										//String ss = String.format("[%f, %f],", pos.getLatitudeDegrees(), pos.getLongitudeDegrees());
+										//js = js + ss;
+										//System.out.println( ss );
+										js = js + String.format(Locale.ENGLISH, "[%f, %f],", pos.getLatitudeDegrees(), pos.getLongitudeDegrees());
 									}
 /*
 									// <Extensions><TPX xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v2"><Watts>60</Watts></TPX></Extensions>
@@ -163,6 +211,10 @@ public class SGMain {
 						}
 					}
 					System.out.println( path.getStatsAsString());
+					js = js + "]).addTo(drawnItems);";
+
+					System.out.println(js);
+					browser.executeJavaScript(js);
 				} catch (JAXBException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
