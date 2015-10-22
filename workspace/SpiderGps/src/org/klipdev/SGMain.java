@@ -7,12 +7,14 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -22,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.TableModel;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -39,15 +42,21 @@ import org.klipdev.tcx.TrackT;
 import org.klipdev.tcx.TrackpointT;
 import org.klipdev.tcx.TrainingCenterDatabaseT;
 
-public class SGMain {
-	final Browser browser= new Browser();
+public class SGMain implements ActionListener {
+	final Browser BROWSER = new Browser();
+	
+	final String MenuFileImportFiles = "Import files...";
+	
+	JFrame mainFrame;
 	JLabel mapLabel;
+
+
 	SGMain() {
 	}
 
 	void buildGUI() {
 		//browser = new Browser();
-		BrowserView browserView = new BrowserView(browser);
+		BrowserView browserView = new BrowserView(BROWSER);
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		mainPanel.add(buildTablePanel(), BorderLayout.WEST);
@@ -62,23 +71,27 @@ public class SGMain {
 		mainPanel.add(buildTestPanel(), BorderLayout.SOUTH);
 		
 		   
-		JFrame frame = new JFrame("SpiderGps");
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		frame.add( mainPanel );
-		frame.setSize(900, 500);
-		frame.setLocationRelativeTo(null);
+		mainFrame = new JFrame("SpiderGps");
+		mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		mainFrame.add( mainPanel );
+		mainFrame.setSize(900, 500);
+		mainFrame.setLocationRelativeTo(null);
 		
-		frame.setJMenuBar( buildMenuBar() );
-		frame.setVisible(true);
+		mainFrame.setJMenuBar( buildMenuBar() );
+		mainFrame.setVisible(true);
 		
 		// TODO: find how to open html file from the package
 //		browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/gmaps.html");
 //		browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/web/testleaflet.html");
-		browser.loadURL("http://www.google.com");
-		browser.reload();
-		mapLabel.setText(browser.getURL());
+		BROWSER.loadURL("http://www.google.com");
+		BROWSER.reload();
+		mapLabel.setText(BROWSER.getURL());
 	}
-
+	
+	
+/*
+ ****************************************************************************** 
+ */
 	JMenuBar buildMenuBar() {
 		JMenuBar menuBar;
 		JMenu menu, submenu;
@@ -93,8 +106,13 @@ public class SGMain {
 		menuBar.add(menu);
 
 		//a group of JMenuItems
-		menuItem = new JMenuItem("Import");
+		menuItem = new JMenuItem(MenuFileImportFiles);
+		menuItem.addActionListener(this);
 		menu.add(menuItem);
+
+		//menuItem = new JMenuItem("Import folder...");
+		//menuItem.addActionListener(this);
+		//menu.add(menuItem);
 		
 		return menuBar;
 	}
@@ -125,21 +143,21 @@ public class SGMain {
 
 		rld.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/gmaps.html");
+				BROWSER.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/gmaps.html");
 				//browser.reloadIgnoringCache();
-				mapLabel.setText(browser.getURL());
+				mapLabel.setText(BROWSER.getURL());
 			}
 		});
 
 		leaf.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/web/testleaflet.html");
+				BROWSER.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/web/testleaflet.html");
 				//browser.reloadIgnoringCache();
-				mapLabel.setText(browser.getURL());
+				mapLabel.setText(BROWSER.getURL());
 			}
 		});
 
-
+// TODO: test simplify.js to reduce size of data
 /*
 		var polygon = L.polygon([
 		                         [51.509, -0.08],
@@ -151,7 +169,7 @@ public class SGMain {
 	    	public void actionPerformed(ActionEvent e) {
 	    		JAXBContext jc;
 				try {
-		    		String js = new String("var polyline = L.polyline([");
+		    		String js = new String("addSection( 'lkj', [");
 		    		
 		    		SGPath path = new SGPath("/Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/miniere.tcx", 1000 );
 					
@@ -211,10 +229,10 @@ public class SGMain {
 						}
 					}
 					System.out.println( path.getStatsAsString());
-					js = js + "]).addTo(drawnItems);";
+					js = js + "]);";
 
 					System.out.println(js);
-					browser.executeJavaScript(js);
+					BROWSER.executeJavaScript(js);
 				} catch (JAXBException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -226,5 +244,24 @@ public class SGMain {
 	     });
 	     
 		return p;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		System.out.println("Selected: " + e.getActionCommand());
+		if ( MenuFileImportFiles.equals(e.getActionCommand())) {
+			JFileChooser chooser = new JFileChooser();
+			chooser.setMultiSelectionEnabled(true);
+			FileFilter ff = KDTools.NewFileFilter("GPS Files (.gpx, .kml, .tcx)", new String[] { "gpx", "kml", "tcx" } );
+			chooser.addChoosableFileFilter( ff );
+			chooser.setFileFilter(ff);
+			chooser.showOpenDialog(mainFrame);
+			File[] files = chooser.getSelectedFiles();
+	        for (File file : files) {
+	        	 System.out.println(file.getPath());
+	             //String path = file.getPath().replace('\\', '/');
+	             //System.out.println(path);
+	        }
+		}
 	}
 }

@@ -2,51 +2,14 @@
 <html>
   <head>
     <title>TEST Leaflet</title>
-    <link rel="stylesheet" href="./leaflet-1.0b2/leaflet.css" />
-    <script src="./leaflet-1.0b2/leaflet.js"></script>
 
-<!--
-    <link rel="stylesheet" href="./leaflet-0.7.5/leaflet.css" />
-    <script src="./leaflet-0.7.5/leaflet.js"></script>
--->
-
-	<link rel="stylesheet" href="./Leaflet.draw-0.2.4/dist/leaflet.draw.css" />
-	<link rel="stylesheet" href="./leaflet-google.css" />
-		
-	<script src="libs/leaflet-src.js"></script>
-	<script src="./src/Leaflet.draw.js"></script>
-
-	<script src="./src/edit/handler/Edit.Poly.js"></script>
-	<script src="./src/edit/handler/Edit.SimpleShape.js"></script>
-	<script src="./src/edit/handler/Edit.Circle.js"></script>
-	<script src="./src/edit/handler/Edit.Rectangle.js"></script>
-
-	<script src="./src/draw/handler/Draw.Feature.js"></script>
-	<script src="./src/draw/handler/Draw.Polyline.js"></script>
-	<script src="./src/draw/handler/Draw.Polygon.js"></script>
-	<script src="./src/draw/handler/Draw.SimpleShape.js"></script>
-	<script src="./src/draw/handler/Draw.Rectangle.js"></script>
-	<script src="./src/draw/handler/Draw.Circle.js"></script>
-	<script src="./src/draw/handler/Draw.Marker.js"></script>
-
-	<script src="./src/ext/LatLngUtil.js"></script>
-	<script src="./src/ext/GeometryUtil.js"></script>
-	<script src="./src/ext/LineUtil.Intersect.js"></script>
-	<script src="./src/ext/Polyline.Intersect.js"></script>
-	<script src="./src/ext/Polygon.Intersect.js"></script>
-
-	<script src="./src/Control.Draw.js"></script>
-	<script src="./src/Tooltip.js"></script>
-	<script src="./src/Toolbar.js"></script>
-
-	<script src="./src/draw/DrawToolbar.js"></script>
-	<script src="./src/edit/EditToolbar.js"></script>
-	<script src="./src/edit/handler/EditToolbar.Edit.js"></script>
-	<script src="./src/edit/handler/EditToolbar.Delete.js"></script>
-
+   	<link rel="stylesheet" href="leaflet-0.7.5/leaflet.css" />
+	<link rel="stylesheet" href="Leaflet.draw-master/dist/leaflet.draw.css" />
 	
-	<script src="leaflet-0.7.5-google.js"></script>
-<!--    <script src="leaflet-1.0b2-google.js"></script>-->
+	<script src="leaflet-0.7.5/leaflet-src.js"></script>
+	<script src="Leaflet.draw-master/dist/leaflet.draw.js"></script>
+	
+	<link rel="stylesheet" href="./leaflet-google.css" />
 
     <script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
   </head>
@@ -55,6 +18,27 @@
     
     <div style="width:600px; height:600px" id="map"></div>
     <script type='text/javascript'>
+    	var nextItem = 0;
+		var sectionTable = new Array(10);	// Default size=10
+		
+		//---------------------
+		function addSection( name, sect ) {
+			var i = nextItem;
+			nextItem++;
+
+			sectionTable[i] = L.polyline(sect).addTo(drawnItems);
+			L.className = name;
+
+			return i;
+		}
+
+		//---------------------
+		function removeSection( idx ) {
+			map.removeLayer( sectionTable[idx] );		// For hide
+		}
+		
+		
+//-----------
 
 		var useGoogle = 0;
 		
@@ -62,9 +46,9 @@
 			var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 			osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 			osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib}),
-			map = new L.Map('map', {layers: [osm], center: new L.LatLng(48.8310844, 2.2275247), zoom: 12 });
+			map = new L.Map('map', {layers: [osm], center: new L.LatLng(48.768938, 2.121207), zoom: 12 });
 		} else {
-		  var map = new L.Map('map', {center: new L.LatLng(48.8310844, 2.2275247), zoom: 12});
+		  var map = new L.Map('map', {center: new L.LatLng(48.768938, 2.121207), zoom: 12});
 		  var googleLayer = new L.Google('TERRAIN');
 		  map.addLayer(googleLayer);
 		}
@@ -72,12 +56,14 @@
 		var drawnItems = new L.FeatureGroup();
 		map.addLayer(drawnItems);
 
-     	var marker = L.marker([48.8310844, 2.2275247]).addTo(map);
-      	marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+     	//var marker = L.marker([48.8310844, 2.2275247]).addTo(map);
+      	//marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
 
-		var polyline = L.polyline([[48.768780, 2.124673],[48.768786, 2.124449],[48.768794, 2.124261],[48.768796, 2.124192],[48.768808, 2.123803],[48.768840, 2.123328],[48.768859, 2.122891],[48.768869, 2.122461],[48.768884, 2.122090],[48.768876, 2.121946],[48.768931, 2.121277],[48.768938, 2.121207]]).addTo(drawnItems);
-		polyline.className = 'Test1';
-		polyline.bindPopup(polyline.className).openPopup();
+		var n = addSection('Test 1', [[48.768780, 2.124673],[48.768786, 2.124449],[48.768794, 2.124261],[48.768796, 2.124192],[48.768808, 2.123803],[48.768840, 2.123328],[48.768859, 2.122891],[48.768869, 2.122461],[48.768884, 2.122090],[48.768876, 2.121946],[48.768931, 2.121277],[48.768938, 2.121207]]);
+		var n2 = addSection( 'Test 2', [[48.769232, 2.120002],[48.769424, 2.120176],[48.769526, 2.120269],[48.769581, 2.120312],[48.769905, 2.120558],[48.770128, 2.120715],[48.770247, 2.120805],[48.770305, 2.120847],[48.770647, 2.121118],[48.770701, 2.121161],[48.770750, 2.121198],[48.770863, 2.121280],[48.770921, 2.121323],[48.770984, 2.121368],[48.771353, 2.121624],[48.771624, 2.121808],[48.771817, 2.121932],[48.771915, 2.121794],[48.772104, 2.121127],[48.772202, 2.120810]] );
+		
+		removeSection( n2 );
+		
      	//var marker2 = L.marker([48.768780, 2.124673]).addTo(map);
       	//marker2.bindPopup(polyline.className).openPopup();
 
