@@ -27,6 +27,10 @@ public class SGPath {
 		path.ensureCapacity(size);
 	}
 	
+	void reset() {
+		path.clear();
+	}
+
 	// Add a position to a path, determine the total area, calculates distance
 	void addPosition( double lat, double lon, double elevation ) {
 		// Add position

@@ -46,10 +46,10 @@ public class SGMain implements ActionListener {
 	final Browser BROWSER = new Browser();
 	
 	final String MenuFileImportFiles = "Import files...";
-	
+
 	JFrame mainFrame;
 	JLabel mapLabel;
-
+	TracesTableModel tableModel;
 
 	SGMain() {
 	}
@@ -107,7 +107,28 @@ public class SGMain implements ActionListener {
 
 		//a group of JMenuItems
 		menuItem = new JMenuItem(MenuFileImportFiles);
-		menuItem.addActionListener(this);
+		menuItem.addActionListener( new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setMultiSelectionEnabled(true);
+				FileFilter ff = KDTools.NewFileFilter("GPS Files (.gpx, .kml, .tcx)", new String[] { "gpx", "kml", "tcx" } );
+				chooser.addChoosableFileFilter( ff );
+				chooser.setFileFilter(ff);
+				chooser.showOpenDialog(mainFrame);
+				File[] files = chooser.getSelectedFiles();
+		        for (File file : files) {
+		        	 SGTools.Log1( this, file.getPath() );
+		        	 try {
+						tableModel.addFile(file.getPath());
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+		             //String path = file.getPath().replace('\\', '/');
+		             //System.out.println(path);
+		        }
+			}
+		});
 		menu.add(menuItem);
 
 		//menuItem = new JMenuItem("Import folder...");
@@ -118,8 +139,8 @@ public class SGMain implements ActionListener {
 	}
 	
 	JPanel buildTablePanel() {
-	    TableModel model = new TracesTableModel();
-	    JTable table = new JTable(model);
+	    tableModel = new TracesTableModel();
+	    JTable table = new JTable(tableModel);
 	    JScrollPane scrollPane = new JScrollPane(table);
 
 	    JPanel tablePanel = new JPanel(new BorderLayout());

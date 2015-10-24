@@ -1,20 +1,22 @@
 package org.klipdev;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 // Manages the list of traces
 public class SGTraceLib {
-	Hashtable traceHT;
+	ArrayList<SGTraceDescriptor> traces;
 	
 	SGTraceLib() {
-		traceHT = new Hashtable();
+		traces = new ArrayList<SGTraceDescriptor>();
 		
 		// TST: add dummy descriptor 
-		SGTraceDescriptor desc = new SGTraceDescriptor( "/trace.tcx" );
-		traceHT.put(desc.getUID(), desc);
+//		SGTraceDescriptor desc = new SGTraceDescriptor( "/trace.tcx" );
+//		traceHT.put(desc.getUID(), desc);
 	};
 	
-	Boolean AddTrace( SGTraceDescriptor tr ) {
-		return false;
+	void addTrace( SGTraceDescriptor td ) {
+		traces.add(td);
+		
 	}
 }

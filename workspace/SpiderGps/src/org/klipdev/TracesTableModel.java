@@ -1,11 +1,32 @@
 package org.klipdev;
 
+import java.util.Collection;
+
 import javax.swing.table.AbstractTableModel;
 
 public class TracesTableModel extends AbstractTableModel {
+	final private int COL_VIEW = 0;
+	final private int COL_NAME = 1;
+	final private int COL_DATE = 2;
 	
-	Object rowData[][] = { { Boolean.TRUE, "1", "01-sep-2015" }, { Boolean.TRUE, "2", "01-sep-2015" }, { Boolean.FALSE, "3", "01-sep-2015" }, { Boolean.TRUE, "4", "01-sep-2015" }, { Boolean.FALSE, "5", "01-sep-2015" } };
+	SGDatabase db = new SGDatabase();
+	SGTraceDescriptor traces[] = null;
+
 	String columnNames[] = { "View", "Filename", "Date" };
+
+	//-------------------------------------------------------------------------
+	//-------------------------------------------------------------------------
+	//-------------------------------------------------------------------------
+	
+	void addFile( String filename ) throws Exception {
+		db.addTrace(filename);
+		this.fireTableDataChanged();
+	}
+	
+	
+	//-------------------------------------------------------------------------
+	//-------------------------------------------------------------------------
+	//-------------------------------------------------------------------------
 
 	public Class getColumnClass(int column) {
 	    return (getValueAt(0, column).getClass());
@@ -13,7 +34,8 @@ public class TracesTableModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return rowData.length;
+//		return rowData.length;
+		return db.traceLib.traces.size();
 	}
 
 	@Override
@@ -27,15 +49,27 @@ public class TracesTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return rowData[rowIndex][columnIndex];
+//		return rowData[rowIndex][columnIndex];
+		SGTraceDescriptor td = db.traceLib.traces.get(rowIndex);
+		if ( columnIndex == COL_VIEW ) {
+			return td.showOnMap;
+		} else if ( columnIndex == COL_NAME ) {
+			return td.filenameShort;
+		} else if ( columnIndex == COL_DATE ) {
+			return "date";
+		}
+		return null;
 	}
 
 	public void setValueAt(Object value, int row, int column) {
-		  rowData[row][column] = value;
+		if ( column == COL_VIEW ) {
+			SGTraceDescriptor td = db.traceLib.traces.get( row );
+			td.showOnMap = (Boolean) value;
+		}
 	}
 
 	public boolean isCellEditable(int row, int column) {
-		  return (column == 0);
+		  return (column == COL_VIEW);
 	}
 	  
 }
