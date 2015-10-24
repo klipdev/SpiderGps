@@ -41,6 +41,10 @@ public abstract class SGTraceDescriptor {
 		uid = UIDGen.nextId();
 		
 		traceDate = readTimeFromFile();
+		
+		// Import the file
+		path = new SGPath( "test", 1000 );
+		parseFile();
 	}
 	
 	final static SGTraceDescriptor NewTraceDescriptor( String filename ) throws Exception {
@@ -95,14 +99,6 @@ public abstract class SGTraceDescriptor {
 	int getType() {
 		return fileType;
 	}
-	
-	final void addTrace( String filename ) {
-		if ( path == null ) {
-			path = new SGPath( "test", 1000 );
-		}
 
-		parseFile();
-	}
-	
 	protected abstract void parseFile();
 }

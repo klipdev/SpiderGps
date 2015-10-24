@@ -19,12 +19,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.WindowConstants;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileFilter;
 
 
-public class SGMain implements ActionListener {
+public class SGMain implements ActionListener, TableModelListener {
 	final Browser BROWSER = new Browser();
-	
+
+	// THE database ;)
+	SGDatabase db = new SGDatabase();
+
 	final String MenuFileImportFiles = "Import files...";
 
 	JFrame mainFrame;
@@ -99,7 +104,7 @@ public class SGMain implements ActionListener {
 		        for (File file : files) {
 		        	 SGTools.Log1( this, file.getPath() );
 		        	 try {
-						tableModel.addFile(file.getPath());
+						db.addTrace(file.getPath());
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -107,6 +112,7 @@ public class SGMain implements ActionListener {
 		             //String path = file.getPath().replace('\\', '/');
 		             //System.out.println(path);
 		        }
+		        tableModel.fireTableDataChanged();
 			}
 		});
 		menu.add(menuItem);
@@ -119,8 +125,10 @@ public class SGMain implements ActionListener {
 	}
 	
 	JPanel buildTablePanel() {
-	    tableModel = new TracesTableModel();
+	    tableModel = new TracesTableModel( db.traceLib.traces );
 	    JTable table = new JTable(tableModel);
+	    tableModel.addTableModelListener(this);
+	    
 	    JScrollPane scrollPane = new JScrollPane(table);
 
 	    JPanel tablePanel = new JPanel(new BorderLayout());
@@ -144,7 +152,7 @@ public class SGMain implements ActionListener {
 
 		rld.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BROWSER.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/gmaps.html");
+				BROWSER.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/gmaps.html");
 				//browser.reloadIgnoringCache();
 				mapLabel.setText(BROWSER.getURL());
 			}
@@ -152,20 +160,14 @@ public class SGMain implements ActionListener {
 
 		leaf.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BROWSER.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/web/testleaflet.html");
+				BROWSER.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/web/testleaflet.html");
 				//browser.reloadIgnoringCache();
 				mapLabel.setText(BROWSER.getURL());
 			}
 		});
 
 // TODO: test simplify.js to reduce size of data
-/*
-		var polygon = L.polygon([
-		                         [51.509, -0.08],
-		                         [51.503, -0.06],
-		                         [51.51, -0.047]
-		                     ]).addTo(map);
-*/
+
 		b.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		/*
@@ -251,19 +253,17 @@ public class SGMain implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		System.out.println("Selected: " + e.getActionCommand());
-		if ( MenuFileImportFiles.equals(e.getActionCommand())) {
-			JFileChooser chooser = new JFileChooser();
-			chooser.setMultiSelectionEnabled(true);
-			FileFilter ff = KDTools.NewFileFilter("GPS Files (.gpx, .kml, .tcx)", new String[] { "gpx", "kml", "tcx" } );
-			chooser.addChoosableFileFilter( ff );
-			chooser.setFileFilter(ff);
-			chooser.showOpenDialog(mainFrame);
-			File[] files = chooser.getSelectedFiles();
-	        for (File file : files) {
-	        	 System.out.println(file.getPath());
-	             //String path = file.getPath().replace('\\', '/');
-	             //System.out.println(path);
-	        }
+	}
+
+	@Override
+	public void tableChanged(TableModelEvent e) {
+		if ( e.getType() == TableModelEvent.UPDATE ) {
+			int row = e.getFirstRow();
+			SGTraceDescriptor td = db.traceLib.traces.get(row);
+			if ( td.showOnMap == true ) {
+				String str = td.path.getJSStringAddSection();
+				BROWSER.executeJavaScript(str);
+			}
 		}
 	}
 }

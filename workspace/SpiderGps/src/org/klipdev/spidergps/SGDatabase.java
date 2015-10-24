@@ -11,6 +11,8 @@ public class SGDatabase {
 
 	public void addTrace( String filename ) throws Exception {
 		SGTraceDescriptor td = SGTraceDescriptor.NewTraceDescriptor( filename );
+		
+		// TODO Check for doublons
 		traceLib.addTrace(td);
 	}
 	

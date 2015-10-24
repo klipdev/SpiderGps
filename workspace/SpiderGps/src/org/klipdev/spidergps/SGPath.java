@@ -4,6 +4,7 @@
 package org.klipdev.spidergps;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * @author Christophe
@@ -69,6 +70,21 @@ public class SGPath {
 		}
 	}
 
+	String getJSStringAddSection() {
+		String js = new String("addSection( 'lkj', [");
+
+		for ( SGPosition pos: path ) {
+			js = js + String.format(Locale.ENGLISH, "[%f, %f],", pos.latitude, pos.longitude );
+		}
+		js = js + "]);";
+		js.replaceAll("],]", "]]" );
+		
+		SGTools.Log1(this,  js );
+		
+		return js;
+	}
+	
+	
 	String getStatsAsString() {
 		String s = String.format("Name: %s\n  Distance: %.2f km\n  D+: %.0f m\n  D-: %.0f m\n", name, distance, elevationP, elevationN );
 		return s;

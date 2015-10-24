@@ -1,14 +1,17 @@
 package org.klipdev.spidergps;
 
+import java.util.ArrayList;
+
 import javax.swing.table.AbstractTableModel;
 
 public class TracesTableModel extends AbstractTableModel {
+	private static final long serialVersionUID = 1L;
+	
 	final private int COL_VIEW = 0;
 	final private int COL_NAME = 1;
 	final private int COL_DATE = 2;
 	
-	SGDatabase db = new SGDatabase();
-	SGTraceDescriptor traces[] = null;
+	ArrayList<SGTraceDescriptor> traces;
 
 	String columnNames[] = { "View", "Filename", "Date" };
 
@@ -16,11 +19,16 @@ public class TracesTableModel extends AbstractTableModel {
 	//-------------------------------------------------------------------------
 	//-------------------------------------------------------------------------
 	
+	TracesTableModel( ArrayList<SGTraceDescriptor> tda ) {
+		traces = tda;
+	}
+	
+/*
 	void addFile( String filename ) throws Exception {
 		db.addTrace(filename);
 		this.fireTableDataChanged();
 	}
-	
+*/
 	
 	//-------------------------------------------------------------------------
 	//-------------------------------------------------------------------------
@@ -32,8 +40,7 @@ public class TracesTableModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-//		return rowData.length;
-		return db.traceLib.traces.size();
+		return traces.size();
 	}
 
 	@Override
@@ -48,7 +55,7 @@ public class TracesTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 //		return rowData[rowIndex][columnIndex];
-		SGTraceDescriptor td = db.traceLib.traces.get(rowIndex);
+		SGTraceDescriptor td = traces.get(rowIndex);
 		if ( columnIndex == COL_VIEW ) {
 			return td.showOnMap;
 		} else if ( columnIndex == COL_NAME ) {
@@ -61,8 +68,9 @@ public class TracesTableModel extends AbstractTableModel {
 
 	public void setValueAt(Object value, int row, int column) {
 		if ( column == COL_VIEW ) {
-			SGTraceDescriptor td = db.traceLib.traces.get( row );
+			SGTraceDescriptor td = traces.get( row );
 			td.showOnMap = (Boolean) value;
+			fireTableDataChanged();
 		}
 	}
 

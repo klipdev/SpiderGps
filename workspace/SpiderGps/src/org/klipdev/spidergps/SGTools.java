@@ -13,7 +13,7 @@ public class SGTools extends KDTools {
 	static void Log1(Object o, String s ) {
 		if ( logLevel == LOG_LVL_NONE ) {
 			return;
-		} else if ( logLevel == LOG_LVL_LIGHT ) {
+		} else { //if ( logLevel == LOG_LVL_LIGHT ) {
 			String ss = String.format("[%s] %s", o.getClass(), s );
 
 			// TODO: replace \n by line header

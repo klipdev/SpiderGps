@@ -31,13 +31,12 @@ public class SGTraceDescriptorTcx extends SGTraceDescriptor {
 
 		JAXBContext jc;
 		try {
-    		SGPath path = new SGPath(filenameLong, 1000 );
-
 			jc = JAXBContext.newInstance(TrainingCenterDatabaseT.class);
 			Unmarshaller u = jc.createUnmarshaller();
 			JAXBElement doc = (JAXBElement) u.unmarshal(new FileInputStream(filenameLong));
 			TrainingCenterDatabaseT tcdb = (TrainingCenterDatabaseT) doc.getValue();
-			
+
+			// TODO Also handle courses !
 			ActivityListT activityList = tcdb.getActivities();
 			List<ActivityT> activityL = activityList.getActivity();
 			for (ActivityT activity : activityL) {
