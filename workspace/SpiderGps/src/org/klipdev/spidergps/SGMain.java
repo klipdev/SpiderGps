@@ -59,17 +59,16 @@ public class SGMain implements ActionListener, TableModelListener {
 		mainFrame = new JFrame("SpiderGps");
 		mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		mainFrame.add( mainPanel );
-		mainFrame.setSize(900, 500);
+		mainFrame.setSize(1200, 800);
 		mainFrame.setLocationRelativeTo(null);
 		
 		mainFrame.setJMenuBar( buildMenuBar() );
 		mainFrame.setVisible(true);
 		
 		// TODO: find how to open html file from the package
-//		browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/gmaps.html");
-//		browser.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/web/testleaflet.html");
-		BROWSER.loadURL("http://www.google.com");
-		BROWSER.reload();
+//		BROWSER.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/gmaps.html");
+		BROWSER.loadURL("file:///Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/web/testleaflet.html");
+//		BROWSER.loadURL("http://www.google.com");
 		mapLabel.setText(BROWSER.getURL());
 	}
 	
@@ -89,12 +88,24 @@ public class SGMain implements ActionListener, TableModelListener {
 		menu = new JMenu("File");
 		menu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(menu);
-
+		
+		// TST
+   	 	try {
+			db.addTrace("/Users/Christophe/0miniere.tcx");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
 		//a group of JMenuItems
 		menuItem = new JMenuItem(MenuFileImportFiles);
 		menuItem.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser();
+// TODO: handle default folder from properties
+//				chooser.setCurrentDirectory(new File("/Users/Christophe/Documents/Loisirs/VTT/Historique/2015"));
 				chooser.setMultiSelectionEnabled(true);
 				FileFilter ff = KDTools.NewFileFilter("GPS Files (.gpx, .kml, .tcx)", new String[] { "gpx", "kml", "tcx" } );
 				chooser.addChoosableFileFilter( ff );
@@ -141,7 +152,7 @@ public class SGMain implements ActionListener, TableModelListener {
 		// TST: panel pour tests uniquement
 		JPanel p = new JPanel();
 
-		JButton b = new JButton("parse tcx");
+		JButton b = new JButton("merge test");
 		p.add(b);
 
 		JButton rld = new JButton("reload gmaps");
@@ -166,84 +177,16 @@ public class SGMain implements ActionListener, TableModelListener {
 			}
 		});
 
-// TODO: test simplify.js to reduce size of data
-
 		b.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		/*
-	    		JAXBContext jc;
-				try {
-		    		String js = new String("addSection( 'lkj', [");
-		    		
-		    		SGPath path = new SGPath("/Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/miniere.tcx", 1000 );
-					
-					jc = JAXBContext.newInstance(TrainingCenterDatabaseT.class);
-					Unmarshaller u = jc.createUnmarshaller();
-					JAXBElement doc = (JAXBElement) u.unmarshal(new FileInputStream("/Users/Christophe/Documents/Dev/SpiderGps/workspace/SpiderGps/src/miniere.tcx"));
-					TrainingCenterDatabaseT tcdb = (TrainingCenterDatabaseT) doc.getValue();
-					
-					ActivityListT activityList = tcdb.getActivities();
-					List<ActivityT> activityL = activityList.getActivity();
-					for (ActivityT activity : activityL) {
-						SportT sport = activity.getSport();
-						System.out.println("Sport " + sport);
-						List<ActivityLapT> laps = activity.getLap();
-						for (ActivityLapT lap : laps) {
-		 
-							List<TrackT> tracks = lap.getTrack();
-		 
-							for (TrackT track : tracks) {
-								List<TrackpointT> trackPoints = track.getTrackpoint();
-								for (TrackpointT trackPoint : trackPoints) {
-									System.out.println("Time " + trackPoint.getTime());
-									System.out.println("  Cadence " + trackPoint.getCadence());
-									HeartRateInBeatsPerMinuteT hr = trackPoint.getHeartRateBpm();
-									if ( hr != null ) {
-										System.out.println("  Heart Rate " + hr.getValue());
-									}
-									
-									
-									// CREATE GPPath OBJECT
-									/////////////////////////
-									PositionT pos = trackPoint.getPosition();
-									if ( pos != null ) {
-										path.addPosition(pos.getLatitudeDegrees(), pos.getLongitudeDegrees(), trackPoint.getAltitudeMeters());
-										//js.concat( String.format("[%f, %f],", pos.getLatitudeDegrees(), pos.getLongitudeDegrees()) );
-										//String ss = String.format("[%f, %f],", pos.getLatitudeDegrees(), pos.getLongitudeDegrees());
-										//js = js + ss;
-										//System.out.println( ss );
-										js = js + String.format(Locale.ENGLISH, "[%f, %f],", pos.getLatitudeDegrees(), pos.getLongitudeDegrees());
-									}
-/*
-									// <Extensions><TPX xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v2"><Watts>60</Watts></TPX></Extensions>
-									ExtensionsT ext = trackPoint.getExtensions();
-									List extensions = ext.getAny();
-									for (Object o : extensions) {
-										Node n = (Node) o;
-										if ("watts".equalsIgnoreCase(n.getFirstChild().getNodeName())) {
-		 
-										System.out.println("  Power " + n.getTextContent() + " watts");
-										}
-		 
-									}
-*
-								}
-							}
-		 
-						}
-					}
-					System.out.println( path.getStatsAsString());
-					js = js + "]);";
+////////////////////////////////////
+////////////////////////////////////
 
-					System.out.println(js);
-					BROWSER.executeJavaScript(js);
-				} catch (JAXBException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}*/
+	    		
+	    		db.merge();
+	    		
+////////////////////////////////////
+////////////////////////////////////
 			}
 	     });
 	     

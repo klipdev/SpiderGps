@@ -15,6 +15,8 @@ public class SGPath {
 	GPArea area;
 	
 	ArrayList<SGPosition> path;
+	ArrayList<SGPosition> pathSimplified;
+	
 	double distance; 	// distance in km;
 	double elevationP;	// positive elevation in meters
 	double elevationN;	// negative elevation in meters
@@ -26,10 +28,23 @@ public class SGPath {
 		area = new GPArea();
 		path = new ArrayList<SGPosition>();
 		path.ensureCapacity(size);
+		
+		pathSimplified = null;
 	}
 	
 	void reset() {
 		path.clear();
+	}
+
+	void simplify() {
+		// 0.0001 seems ok, could be filtered more
+		// 0.0003 too strong
+		// 0.00015 ok. a bit strong? yes, too strong
+		// 0.00012 ok for now. Too strong ?
+		pathSimplified = SGSimplify.simplify(path, 0.00012);
+
+		SGTools.Log1(this, "Full size      : " + path.size() + "points" );
+		SGTools.Log1(this, "Simplified size: " + pathSimplified.size() + "points - " + (path.size() / pathSimplified.size()) + "x smaller" );
 	}
 
 	// Add a position to a path, determine the total area, calculates distance
@@ -73,11 +88,22 @@ public class SGPath {
 	String getJSStringAddSection() {
 		String js = new String("addSection( 'lkj', [");
 
-		for ( SGPosition pos: path ) {
+		for ( SGPosition pos: pathSimplified ) {
 			js = js + String.format(Locale.ENGLISH, "[%f, %f],", pos.latitude, pos.longitude );
 		}
 		js = js + "]);";
 		js.replaceAll("],]", "]]" );
+///////
+		//TST
+		String js2 = new String("addSection( 'lkj', [");
+
+		for ( SGPosition pos2: path ) {
+			js2 = js2 + String.format(Locale.ENGLISH, "[%f, %f],", pos2.latitude, pos2.longitude );
+		}
+		js2 = js2 + "]);";
+		js2.replaceAll("],]", "]]" );
+		//js = js + "\n" + js2;
+///////
 		
 		SGTools.Log1(this,  js );
 		

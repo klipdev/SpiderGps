@@ -25,10 +25,20 @@ public class SGTraceDescriptorTcx extends SGTraceDescriptor {
 		fileType = FILETYPE_TCX;		
 	}
 
+	// TST
+	protected void _parseFile() {
+		path.reset();
+
+		path.addPosition( 10, 10, 0 );
+		path.addPosition( 110, 10, 0 );
+		path.addPosition( 110, 110, 0 );
+		return;
+	}
+	
 	@Override
 	protected void parseFile() {
 		path.reset();
-
+		
 		JAXBContext jc;
 		try {
 			jc = JAXBContext.newInstance(TrainingCenterDatabaseT.class);

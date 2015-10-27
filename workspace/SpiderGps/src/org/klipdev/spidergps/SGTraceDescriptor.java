@@ -45,6 +45,7 @@ public abstract class SGTraceDescriptor {
 		// Import the file
 		path = new SGPath( "test", 1000 );
 		parseFile();
+		path.simplify();
 	}
 	
 	final static SGTraceDescriptor NewTraceDescriptor( String filename ) throws Exception {

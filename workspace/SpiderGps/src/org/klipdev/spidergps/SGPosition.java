@@ -5,9 +5,13 @@ public class SGPosition {
 		latitude  = lat;
 		longitude = lon;
 		elevation = ele;
+		
+		mergePoint = false;
 	}
 	
 	double latitude;		// Latitude
 	double longitude;		// Longitude
 	double elevation;
+	
+	boolean mergePoint;
 }
