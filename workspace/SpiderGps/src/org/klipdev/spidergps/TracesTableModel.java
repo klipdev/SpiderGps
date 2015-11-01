@@ -59,7 +59,7 @@ public class TracesTableModel extends AbstractTableModel {
 		if ( columnIndex == COL_VIEW ) {
 			return td.showOnMap;
 		} else if ( columnIndex == COL_NAME ) {
-			return td.filenameShort;
+			return td.name;
 		} else if ( columnIndex == COL_DATE ) {
 			return "date";
 		}
@@ -70,7 +70,7 @@ public class TracesTableModel extends AbstractTableModel {
 		if ( column == COL_VIEW ) {
 			SGTraceDescriptor td = traces.get( row );
 			td.showOnMap = (Boolean) value;
-			fireTableDataChanged();
+			fireTableRowsUpdated(row, row);
 		}
 	}
 

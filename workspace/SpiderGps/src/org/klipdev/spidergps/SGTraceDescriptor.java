@@ -3,12 +3,15 @@ package org.klipdev.spidergps;
 import java.io.File;
 import java.time.LocalDateTime;
 
-public abstract class SGTraceDescriptor {
+
+// TODO: different class for path and sections ?
+public class SGTraceDescriptor {
 	public static final int FILETYPE_TCX = 1;
 	public static final int FILETYPE_GPX = 2;
 	public static final int FILETYPE_KML = 3;
 	public static final int FILETYPE_UNKNOWN = 9;
 
+	String name;
 	String filenameLong;
 	String filenameShort;
 
@@ -27,14 +30,31 @@ public abstract class SGTraceDescriptor {
 
 	SGPath path = null;
 
+	protected SGTraceDescriptor(SGPath p) throws Exception {
+		showOnMap     = false;
+		
+		filenameLong  = "section";
+		filenameShort = "section";
+		name          = p.name;
+
+		fileType = FILETYPE_UNKNOWN;
+		
+		// Generate UID
+		uid = UIDGen.nextId();
+		
+		// Import the file
+		path = p;
+	}
+
 	protected SGTraceDescriptor(String filename) throws Exception {
 		showOnMap    = false;
 		filenameLong = filename;
 		
 		int index = filename.lastIndexOf(File.separatorChar);
 		filenameShort = filename.substring(index+1);
-		
-		// TODO: detect filetype from file
+		name = filenameShort;
+
+		// Detect filetype from file
 		fileType = detectFileType( filename );
 		
 		// Generate UID
@@ -48,6 +68,12 @@ public abstract class SGTraceDescriptor {
 		path.simplify();
 	}
 	
+	final static SGTraceDescriptor NewTraceDescriptor( SGPath p ) throws Exception {
+		SGTraceDescriptor td = null;
+		td = new SGTraceDescriptor(p);
+		return td;
+	}
+
 	final static SGTraceDescriptor NewTraceDescriptor( String filename ) throws Exception {
 		SGTraceDescriptor td = null;
 		int type = SGTraceDescriptor.detectFileType(filename);
@@ -101,5 +127,7 @@ public abstract class SGTraceDescriptor {
 		return fileType;
 	}
 
-	protected abstract void parseFile();
+	protected void parseFile() {
+		return;
+	}
 }

@@ -91,7 +91,8 @@ public class SGMain implements ActionListener, TableModelListener {
 		
 		// TST
    	 	try {
-			db.addTrace("/Users/Christophe/0miniere.tcx");
+//			db.addTrace("/Users/Christophe/0miniere.tcx");
+			db.addTrace("/Users/Christophe/1testmerge.tcx");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -183,7 +184,13 @@ public class SGMain implements ActionListener, TableModelListener {
 ////////////////////////////////////
 
 	    		
-	    		db.merge();
+	    		try {
+					db.merge();
+					tableModel.fireTableDataChanged();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 	    		
 ////////////////////////////////////
 ////////////////////////////////////

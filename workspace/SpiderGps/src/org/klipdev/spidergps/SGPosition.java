@@ -1,17 +1,19 @@
 package org.klipdev.spidergps;
 
 public class SGPosition {
+	// TODO: change params order: lon first, then lat
 	SGPosition( double lat, double lon, double ele ) {
 		latitude  = lat;
 		longitude = lon;
-		elevation = ele;
+
+		elevation = (float)ele;
 		
 		mergePoint = false;
 	}
 	
 	double latitude;		// Latitude
 	double longitude;		// Longitude
-	double elevation;
+	float elevation;
 	
 	boolean mergePoint;
 }

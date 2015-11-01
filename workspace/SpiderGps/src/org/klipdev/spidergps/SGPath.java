@@ -17,10 +17,9 @@ public class SGPath {
 	ArrayList<SGPosition> path;
 	ArrayList<SGPosition> pathSimplified;
 	
-	double distance; 	// distance in km;
-	double elevationP;	// positive elevation in meters
-	double elevationN;	// negative elevation in meters
-	int nbPosPerKm;	    // Used for filtering
+	float distance; 	// distance in km;
+	float elevationP;	// positive elevation in meters
+	float elevationN;	// negative elevation in meters
 	
 	SGPath( String s, int size ) {
 		name = s;
@@ -32,8 +31,46 @@ public class SGPath {
 		pathSimplified = null;
 	}
 	
+	SGPath( String s, ArrayList<SGPosition> p ) {
+		name = s;
+		elevationP = elevationN = 0;
+		area = new GPArea();
+		path = p;
+		pathSimplified = null;
+		
+		// Calculate distance, elevation
+		calculateStatistics();
+	}
+
 	void reset() {
 		path.clear();
+		clearStatistics();
+	}
+
+	void clearStatistics() {
+		distance = 0;
+		elevationP = 0;
+		elevationN = 0;
+	}
+	void calculateStatistics() {
+		clearStatistics();
+		if (path.size() == 0) {
+			return;
+		}
+
+		SGPosition pos1, pos2;
+		pos1 = path.get(0);
+		for ( int i = 1; i < path.size(); i++ ) {
+			pos2 = path.get(i);
+			distance = distance + (float)DistanceCalculator.distance(pos1.latitude, pos1.longitude, pos2.latitude, pos2.longitude, "K" );
+
+			float deltaEle = pos2.elevation - pos1.elevation;
+			if ( deltaEle > 0 ) {
+				elevationP = elevationP + deltaEle;
+			} else if (deltaEle < 0 ) {
+				elevationN = elevationN + deltaEle;
+			}
+		}
 	}
 
 	void simplify() {
@@ -70,13 +107,13 @@ public class SGPath {
 			}
 			
 			SGPosition prev = path.get(path.size()-2);
+
 			// Calculate distance
-			distance = distance + DistanceCalculator.distance(prev.latitude, prev.longitude, lat, lon, "K" );
-			
-			
+			distance = distance + (float)DistanceCalculator.distance(prev.latitude, prev.longitude, lat, lon, "K" );
+						
 			// Calculate elevation
 			// TODO: filter elevation
-			double deltaEle = elevation - prev.elevation;
+			float deltaEle = (float)(elevation - prev.elevation);
 			if ( deltaEle > 0 ) {
 				elevationP = elevationP + deltaEle;
 			} else if (deltaEle < 0 ) {
@@ -85,11 +122,20 @@ public class SGPath {
 		}
 	}
 
+	int id = 0;
 	String getJSStringAddSection() {
-		String js = new String("addSection( 'lkj', [");
+		id++;
+		String js = new String("addSection( 'Section #" + id + "', [");
 
-		for ( SGPosition pos: pathSimplified ) {
-			js = js + String.format(Locale.ENGLISH, "[%f, %f],", pos.latitude, pos.longitude );
+		if ( pathSimplified == null ) {
+			// For sections
+			for ( SGPosition pos: path ) {
+				js = js + String.format(Locale.ENGLISH, "[%f, %f],", pos.latitude, pos.longitude );
+			}
+		} else {
+			for ( SGPosition pos: pathSimplified ) {
+				js = js + String.format(Locale.ENGLISH, "[%f, %f],", pos.latitude, pos.longitude );
+			}
 		}
 		js = js + "]);";
 		js.replaceAll("],]", "]]" );
