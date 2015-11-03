@@ -55,7 +55,7 @@ public class SGDatabase {
 					p1 = path.get(n);
 					p2 = path.get(n+1);
 					sqdist = SGSimplify.getSquareSegmentDistance(p, p1, p2);
-					if ( sqdist < 0.00012 ) {
+					if ( sqdist < 0.000001 ) {
 						np = SGTools.PointSegmentDistanceSquared(p, p1, p2, dist );
 						if ( np != null ) {
 							// 0. Find common points and ? Not needed... post treatment will take care of that
@@ -64,13 +64,15 @@ public class SGDatabase {
 			
 							// 1. find closest point in P1-P2 segment
 							//np = SGTools.getClosestPointOnSegment(p, p1, p2);
+/*
 							ArrayList<SGPosition> test = new ArrayList<SGPosition>();
 							test.add(p1);
 							test.add(p2);
 							test.add(p);
 							test.add(np);
 							this.addSection("test1", test);
-	//						return;
+*/
+//							return;
 	
 							// 2. break segment
 							np.mergePoint = true;
@@ -80,7 +82,7 @@ public class SGDatabase {
 							path.add( n+1, np );
 							n = n + 1;	// One extra count because we added 1 element
 							cur = cur + 1;
-							return;
+							//return;
 						}
 					}
 				}
@@ -90,7 +92,7 @@ public class SGDatabase {
 			cur = cur + 1;
 		}
 		
-		this.addSection("test", path);
+		//this.addSection("test", path);
 
 		return;
 /*
