@@ -46,7 +46,7 @@ public class SGDatabase {
 		SGPosition p, p1, p2;
 		SGPosition np = null;
 		double dist = 0;
-		int cur = 0;
+		int cur = 1;
 		int n = 1;
 		while ( cur < path.size() ) {
 			p = path.get(cur);
@@ -55,7 +55,7 @@ public class SGDatabase {
 					p1 = path.get(n);
 					p2 = path.get(n+1);
 					sqdist = SGSimplify.getSquareSegmentDistance(p, p1, p2);
-					if ( sqdist < 0.000001 ) {
+					if ( sqdist < 0.0000001 ) {
 						np = SGTools.PointSegmentDistanceSquared(p, p1, p2, dist );
 						if ( np != null ) {
 							// 0. Find common points and ? Not needed... post treatment will take care of that
@@ -81,7 +81,10 @@ public class SGDatabase {
 							// TODO: keep log of points
 							path.add( n+1, np );
 							n = n + 1;	// One extra count because we added 1 element
-							cur = cur + 1;
+							if ( n < cur ) {
+								// TODO: test this scenario, where a point intersect with a previous section
+								cur = cur + 1;
+							}
 							//return;
 						}
 					}
