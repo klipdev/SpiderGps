@@ -12,7 +12,7 @@ import java.util.Locale;
  */
 public class SGPath {
 	String name;		// Path name
-	GPArea area;
+	SGArea area;
 	
 	ArrayList<SGPosition> path;
 	ArrayList<SGPosition> pathSimplified;
@@ -24,7 +24,7 @@ public class SGPath {
 	SGPath( String s, int size ) {
 		name = s;
 		elevationP = elevationN = 0;
-		area = new GPArea();
+		area = new SGArea();
 		path = new ArrayList<SGPosition>();
 		path.ensureCapacity(size);
 		
@@ -34,7 +34,7 @@ public class SGPath {
 	SGPath( String s, ArrayList<SGPosition> p ) {
 		name = s;
 		elevationP = elevationN = 0;
-		area = new GPArea();
+		area = new SGArea();
 		path = p;
 		pathSimplified = null;
 		
