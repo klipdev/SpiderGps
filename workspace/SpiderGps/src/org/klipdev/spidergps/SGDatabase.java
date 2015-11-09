@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class SGDatabase {
 	SGTraceLib traceLib   = new SGTraceLib();
-	SGTraceLib sectionLib = new SGTraceLib();
+	SGWebOfSegments wps = new SGWebOfSegments();
 	
 	public SGDatabase() {
 		
@@ -97,7 +97,45 @@ public class SGDatabase {
 		
 		//this.addSection("test", path);
 
-		return;
+		//return;
+{
+		p = null;
+		sqdist = 0;
+		boolean inseg = false;	// true if common segment
+		int segstart = 0;
+		int nbsec = 1;
+		int markers[] = new int[path.size()];	// non zero if position is a segment start/stop
+		markers[0] = 1;
+		SGPath sect = new SGPath( "section"+nbsec, 1 );
+		//sect.addPosition(lat, lon, elevation);
+		for ( int i = 1; i < path.size(); i++ ) {
+			// Get current point
+			p = path.get(i);
+			
+			// Find common point
+			for ( int j = i+1; j < path.size(); j++ ) {
+				if ( j != i ) {
+					p2 = path.get(j);
+					sqdist = SGSimplify.getSquareDistance(p, p2);
+					if ( sqdist <= 0.0000001 ) {
+						// Intersection found
+						// where we in a segment ?
+						if ( inseg == true ) {
+							// Yes: continue seg???
+						} else {
+							// No: new seg
+							sect.addPosition(p2.latitude, p2.longitude, p2.elevation);
+							this.addSection("", sect);
+							segstart = i;
+							nbsec++;
+							sect = new SGPath("section"+nbsec, 1);
+						}
+					}
+				}
+			}
+		}
+}
+		
 /*
 		// Find sections !
 		int markers[] = new int[path.size()];
@@ -121,7 +159,7 @@ public class SGDatabase {
 				for ( n = cur + 1; n < path.size(); n++  ) {
 					p2 = path.get(n);
 					sqdist = SGSimplify.getSquareDistance(p, p2);
-					if ( sqdist <= 0.00012 ) {
+					if ( sqdist <= 0.0000001 ) {
 						markers[n] += 2;
 						markers[cur] ++;
 					}
