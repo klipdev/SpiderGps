@@ -20,5 +20,7 @@ public class SGSegment extends SGPath {
 		endPos   = p.get(p.size()-1);
 		
 		// TODO: detect if segment is too short
+		
+		
 	}
 }
