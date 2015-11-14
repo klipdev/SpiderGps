@@ -9,12 +9,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,6 +33,9 @@ public class SGMain implements ActionListener, TableModelListener {
 	SGDatabase db = new SGDatabase();
 
 	final String MenuFileImportFiles = "Import files...";
+	final String MenuHelpAbout = "About";
+	
+	final String jxBrowserDisclaimer = "SpiderGps uses JxBrowser http://www.teamdev.com/jxbrowser, which is a proprietary software. The use of JxBrowser is governed by JxBrowser Product Licence Agreement http://www.teamdev.com/jxbrowser-licence-agreement. If you would like to use JxBrowser in your development, please contact TeamDev.";
 
 	JFrame mainFrame;
 	JLabel mapLabel;
@@ -88,7 +93,11 @@ public class SGMain implements ActionListener, TableModelListener {
 		menu = new JMenu("File");
 		menu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(menu);
-		
+
+		menu = new JMenu("Help");
+		menu.setMnemonic(KeyEvent.VK_H);
+		menuBar.add(menu);
+
 		// TST
    	 	try {
 //			db.addTrace("/Users/Christophe/0miniere.tcx");
@@ -97,7 +106,20 @@ public class SGMain implements ActionListener, TableModelListener {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
+   	 	menuItem = new JMenuItem(MenuHelpAbout);
+		menuItem.addActionListener( new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+//				YourJPanelForm stuff = new YourJPanelForm();
+				JOptionPane.showMessageDialog(null,"blah blah","Spider GPS",JOptionPane.PLAIN_MESSAGE);
+/*
+				final JDialog frame = new JDialog( mainFrame, "SpiderGPS", true );
+				frame.getContentPane().add( new SGAboutPanel() );
+				frame.pack();
+				frame.setVisible(true);
+*/
+			}
+		} );
 		
 		
 		//a group of JMenuItems

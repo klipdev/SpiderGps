@@ -24,9 +24,30 @@ public class SGTools extends KDTools {
 		}
 	}
 	
+	// This works on a plane, but produces errors when used on spherical geometry
+	// Still gives an approximation, to be improved later with a better algorithm
+	// I'm working with very small distance so might still be acceptable to use this algorithm.
+	// TODO: (3) find better intersection algo
+	public static SGPosition getIntersection( SGPosition A1, SGPosition B1, SGPosition A2, SGPosition B2 ) {
+		double X1sum = A1.longitude - B1.longitude;
+		double X2sum = A2.longitude - B2.longitude;
+		double Y1sum = A1.latitude - B1.latitude;
+		double Y2sum = A2.latitude - B2.latitude;
 	
+		double LineDenominator = X1sum * Y2sum - Y1sum * X2sum;
+		// TODO: (3) not sure a comparison with 0.0 is a good idea. Could be better with a small threshold
+		if ( LineDenominator == 0.0 ) {
+		    return null;
+		}
 	
+		double a = A1.longitude * B1.latitude - A1.latitude * B1.longitude;
+		double b = A2.longitude * B2.latitude - A2.latitude * B2.longitude;
 	
+		double x = (a * X2sum - b * X1sum) / LineDenominator;
+		double y = (a * Y2sum - b * Y1sum) / LineDenominator;
+		
+		return new SGPosition( y, x, 0 );
+	}
 
 	  /**
 	   * Returns closest point on segment to point

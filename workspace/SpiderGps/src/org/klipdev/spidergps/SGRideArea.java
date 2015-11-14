@@ -28,7 +28,7 @@ public class SGRideArea {
 			area.longitudeW = s.area.longitudeW;
 			
 			
-			// TODO: (1) detect segments within this new segment
+			// TODO: (1) detect segments within this new segment? done before ?
 			
 			segments.add(s);
 		} else {
@@ -39,7 +39,7 @@ public class SGRideArea {
 			}
 			
 			// Still there? The segment area then overlaps this ride area !
-			boolean p1in = true, p2in = true; 	// true if p1 or p2 are in the area of a line
+			boolean sp1in = true, sp2in = true; 	// true if p1 or p2 are in the area of a line
 			SGPosition sp1, sp2, p1, p2;
 			for ( SGSegment seg: segments ) {
 				if ( seg.area.overlapsArea( s.area ) ) {
@@ -47,21 +47,21 @@ public class SGRideArea {
 					// Let's detect intersections etc...
 					
 					// Parse segment
-					for ( int i = 1; i < s.path.size(); i++ ) {
-						sp1 = s.path.get( i - 1 );
-						sp2 = s.path.get( i );
+					for ( int i = 1; i < seg.path.size(); i++ ) {
+						p1 = seg.path.get( i - 1 );
+						p2 = seg.path.get( i );
 						
 						// Init
-						p1 = s.path.get( 0 );
+						sp1 = s.path.get( 0 );
 						if ( ( sp1.latitude > p1.latitude && sp1.latitude > p2.latitude ) ||
 							 ( sp1.latitude < p1.latitude && sp1.latitude < p2.latitude ) ||
 							 ( sp1.longitude > p1.longitude && sp1.longitude > p2.longitude ) ||
 							 ( sp1.longitude < p1.longitude && sp1.longitude < p2.longitude ) ) {
-							p1in = false;
+							sp1in = false;
 						}
 						// Loop
-						for ( int j = 1; j < seg.path.size(); j++ ) {
-							p2 = s.path.get( i );
+						for ( int j = 1; j < s.path.size(); j++ ) {
+							sp2 = s.path.get( j );
 
 							// Detect intersections
 							if ( ( sp2.latitude > p1.latitude && sp2.latitude > p2.latitude ) ||
@@ -69,16 +69,22 @@ public class SGRideArea {
 							     ( sp2.longitude > p1.longitude && sp2.longitude > p2.longitude ) ||
 							     ( sp2.longitude < p1.longitude && sp2.longitude < p2.longitude ) ) {
 								// OUT
-								p2in = false;
+								sp2in = false;
 							}
 							     
-							if ( p1in == true || p2in == true) {
-								// Look for intersection
+							if ( sp1in == true || sp2in == true) {
+								// Look for intersection. There may not be any
+								SGPosition inter = SGTools.getIntersection(p1, p2, sp1, sp2);
+								if ( inter == null ) {
+									// No intersection
+								} else {
+									// TODO: do something
+								}
 							}
 
 							// END ITERATION
-							p1   = p2;
-							p1in = p2in;
+							sp1   = sp2;
+							sp1in = sp2in;
 						}
 					}
 				}
@@ -89,6 +95,7 @@ public class SGRideArea {
 					return;
 				}
 */				
+/*
 				double sqdist = 0;
 				SGPosition p, p1, p2;
 				SGPosition np = null;
@@ -134,6 +141,7 @@ public class SGRideArea {
 					n = 0;
 					cur = cur + 1;
 				}
+*/
 ///////////////////////////
 			}
 		}
@@ -142,6 +150,6 @@ public class SGRideArea {
 	}
 	
 	public boolean mergeSegments( SGSegment s1, SGSegment s2 ) {
-		
+		return false;
 	}
 }

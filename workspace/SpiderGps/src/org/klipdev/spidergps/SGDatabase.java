@@ -86,6 +86,9 @@ public class SGDatabase {
 								cur = cur + 1;
 							}
 							//return;
+						} else {
+							// the point is not close to an existing segment ==> let's look for intersections
+							// TODO: (1) look for intersection 
 						}
 					}
 				}
@@ -98,44 +101,95 @@ public class SGDatabase {
 		//this.addSection("test", path);
 
 		//return;
+
 {
 		p = null;
 		sqdist = 0;
 		boolean inseg = false;	// true if common segment
 		int segstart = 0;
 		int nbsec = 1;
-		int markers[] = new int[path.size()];	// non zero if position is a segment start/stop
-		markers[0] = 1;
+		//int markers[] = new int[path.size()];	// non zero if position is a segment start/stop
+		//markers[0] = 1;
 		SGPath sect = new SGPath( "section"+nbsec, 1 );
 		//sect.addPosition(lat, lon, elevation);
-		for ( int i = 1; i < path.size(); i++ ) {
+
+		int segsize = 1;
+		inseg = false;
+		boolean poifound = false;
+		for ( int i = 0; i < path.size(); i++ ) {
 			// Get current point
 			p = path.get(i);
 			
-			// Find common point
+			int j = i+1;
+			while ( poifound == false ) {
+				if ( j < path.size() ) {
+					p2 = path.get( j );
+
+					sqdist = SGSimplify.getSquareDistance(p, p2);
+					if ( sqdist <= 0.0000001 ) {
+						if ( inseg == false ) {
+							// end of seg ==> add it to lib and start new seg
+							inseg = true;
+						} else {
+							
+						}
+						poifound = true;	// End of path is a POI
+					} else {
+						if ( inseg == true ) {
+							// end of seg ==> add it to lib and start new seg
+							inseg = false;
+						} else {
+							
+						}
+						poifound = true;	// End of path is a POI
+					}
+					
+					j++;
+				} else {				
+					poifound = true;	// End of path is a POI ?
+				}
+			}
+		}
+		
+		
+		// Start with first point, and then look for next POI: intersection of common point
+		for ( int i = 0; i < path.size(); i++ ) {
+			// Get current point
+			p = path.get(i);
+			
+			// Find common point ot intersection
 			for ( int j = i+1; j < path.size(); j++ ) {
-				if ( j != i ) {
+				if ( j != i ) {		// Always true...
 					p2 = path.get(j);
 					sqdist = SGSimplify.getSquareDistance(p, p2);
 					if ( sqdist <= 0.0000001 ) {
-						// Intersection found
+						// Common point found
 						// where we in a segment ?
-						if ( inseg == true ) {
-							// Yes: continue seg???
+						if ( inseg == true || i == 0 ) {
+							// Yes: continue seg
 						} else {
-							// No: new seg
+							// No: start new seg
 							sect.addPosition(p2.latitude, p2.longitude, p2.elevation);
 							this.addSection("", sect);
 							segstart = i;
 							nbsec++;
 							sect = new SGPath("section"+nbsec, 1);
 						}
+					} else if (0==1) {
+						// TODO: (1) check if p2 is intersection
+					} else {
+						// No common point found
+						if ( inseg == false ) {
+							// Continue current section
+						} else {
+							// leaving a common section
+						}
 					}
 				}
 			}
 		}
 }
-		
+
 /*
 		// Find sections !
 		int markers[] = new int[path.size()];
