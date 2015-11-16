@@ -12,6 +12,6 @@
 	<classpathentry kind="lib" path="/Users/Christophe/Documents/Dev/JavaLib/jxbrowser-5.4.3-cross-desktop-win_mac_linux/lib/jxbrowser-linux64-5.4.3.jar"/>
 	<classpathentry kind="lib" path="/Users/Christophe/Documents/Dev/JavaLib/jxbrowser-5.4.3-cross-desktop-win_mac_linux/lib/jxbrowser-mac-5.4.3.jar"/>
 	<classpathentry kind="lib" path="/Users/Christophe/Documents/Dev/JavaLib/jxbrowser-5.4.3-cross-desktop-win_mac_linux/lib/jxbrowser-win-5.4.3.jar"/>
-	<classpathentry kind="lib" path="/Users/Christophe/Documents/Dev/JavaLib/jxbrowser-5.4.3-cross-desktop-win_mac_linux/license.jar"/>
+	<classpathentry kind="lib" path="/Users/Christophe/Documents/Dev/JavaLib/jxbrowser-5.4.3-cross-desktop-win_mac_linux/JxBrowser 5.x Free Educational Licence for Open-Source Project -SpiderGps/development.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
