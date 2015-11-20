@@ -35,7 +35,7 @@ public class SGMain implements ActionListener, TableModelListener {
 	final String MenuFileImportFiles = "Import files...";
 	final String MenuHelpAbout = "About";
 	
-	final String jxBrowserDisclaimer = "SpiderGps uses JxBrowser http://www.teamdev.com/jxbrowser, which is a proprietary software. The use of JxBrowser is governed by JxBrowser Product Licence Agreement http://www.teamdev.com/jxbrowser-licence-agreement. If you would like to use JxBrowser in your development, please contact TeamDev.";
+	final String jxBrowserDisclaimer = "SpiderGps uses JxBrowser http://www.teamdev.com/jxbrowser, which is a proprietary software.\nThe use of JxBrowser is governed by JxBrowser Product Licence Agreement http://www.teamdev.com/jxbrowser-licence-agreement.\nIf you would like to use JxBrowser in your development, please contact TeamDev.";
 
 	JFrame mainFrame;
 	JLabel mapLabel;
@@ -89,39 +89,12 @@ public class SGMain implements ActionListener, TableModelListener {
 		//Create the menu bar.
 		menuBar = new JMenuBar();
 
-		//Build the first menu.
+		// File Menu
+		//-----------
 		menu = new JMenu("File");
 		menu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(menu);
 
-		menu = new JMenu("Help");
-		menu.setMnemonic(KeyEvent.VK_H);
-		menuBar.add(menu);
-
-		// TST
-   	 	try {
-//			db.addTrace("/Users/Christophe/0miniere.tcx");
-			db.addTrace("/Users/Christophe/1testmerge.tcx");
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-   	 	menuItem = new JMenuItem(MenuHelpAbout);
-		menuItem.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-//				YourJPanelForm stuff = new YourJPanelForm();
-				JOptionPane.showMessageDialog(null,"blah blah","Spider GPS",JOptionPane.PLAIN_MESSAGE);
-/*
-				final JDialog frame = new JDialog( mainFrame, "SpiderGPS", true );
-				frame.getContentPane().add( new SGAboutPanel() );
-				frame.pack();
-				frame.setVisible(true);
-*/
-			}
-		} );
-		
-		
 		//a group of JMenuItems
 		menuItem = new JMenuItem(MenuFileImportFiles);
 		menuItem.addActionListener( new ActionListener() {
@@ -151,11 +124,42 @@ public class SGMain implements ActionListener, TableModelListener {
 		});
 		menu.add(menuItem);
 
+		
+		// Help Menu
+		//-----------
+		menu = new JMenu("Help");
+		menu.setMnemonic(KeyEvent.VK_H);
+		menuBar.add(menu);
+
+   	 	menuItem = new JMenuItem(MenuHelpAbout);
+		menuItem.addActionListener( new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+//				YourJPanelForm stuff = new YourJPanelForm();
+				JOptionPane.showMessageDialog(null,jxBrowserDisclaimer,"Spider GPS",JOptionPane.PLAIN_MESSAGE);
+/*
+				final JDialog frame = new JDialog( mainFrame, "SpiderGPS", true );
+				frame.getContentPane().add( new SGAboutPanel() );
+				frame.pack();
+				frame.setVisible(true);
+*/
+			}
+		} );
+		menu.add(menuItem);
+		
 		//menuItem = new JMenuItem("Import folder...");
 		//menuItem.addActionListener(this);
 		//menu.add(menuItem);
-		
-		return menuBar;
+
+		// TST
+   	 	try {
+//			db.addTrace("/Users/Christophe/0miniere.tcx");
+			db.addTrace("/Users/Christophe/1testmerge.tcx");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+   	 	
+   	 	return menuBar;
 	}
 	
 	JPanel buildTablePanel() {
