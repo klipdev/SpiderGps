@@ -33,6 +33,8 @@ public class SGMain implements ActionListener, TableModelListener {
 	SGDatabase db = new SGDatabase();
 
 	final String MenuFileImportFiles = "Import files...";
+	final String MenuFileSave = "Save";
+	final String MenuFileSaveAs = "Save As...";
 	final String MenuHelpAbout = "About";
 	
 	final String jxBrowserDisclaimer = "SpiderGps uses JxBrowser http://www.teamdev.com/jxbrowser, which is a proprietary software.\nThe use of JxBrowser is governed by JxBrowser Product Licence Agreement http://www.teamdev.com/jxbrowser-licence-agreement.\nIf you would like to use JxBrowser in your development, please contact TeamDev.";
@@ -95,7 +97,44 @@ public class SGMain implements ActionListener, TableModelListener {
 		menu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(menu);
 
-		//a group of JMenuItems
+		// Save
+		menuItem = new JMenuItem(MenuFileSave);
+		menuItem.addActionListener( new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if ( db.dbFilename.isEmpty() ) {
+					JFileChooser chooser = new JFileChooser();
+	// TODO: handle default folder from properties
+	//				chooser.setCurrentDirectory(new File("/Users/Christophe/Documents/Loisirs/VTT/Historique/2015"));
+					chooser.setMultiSelectionEnabled(false);
+					FileFilter ff = KDTools.NewFileFilter("SpiderGPS File (.sgd)", new String[] { "sgd" } );
+					chooser.addChoosableFileFilter( ff );
+					chooser.setFileFilter(ff);
+					chooser.showSaveDialog(mainFrame);
+					
+					File f = chooser.getSelectedFile();
+					if ( f.exists() ) {
+						JOptionPane.showMessageDialog(null,"Overwrite existing file ?","Spider GPS",JOptionPane.YES_NO_OPTION);
+						int resp = JOptionPane.showConfirmDialog(null, "Overwrite existing file ?" );
+						if ( resp != JOptionPane.YES_OPTION ) {
+							return;
+						}
+					}
+					
+					db.saveAs( f.getAbsolutePath() );
+					return;
+				}
+
+				// Save the file !
+				db.save();
+			}
+		});
+		menu.add(menuItem);
+
+		// Save as
+		menuItem = new JMenuItem(MenuFileSaveAs);
+		menu.add(menuItem);
+
+		// Import
 		menuItem = new JMenuItem(MenuFileImportFiles);
 		menuItem.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

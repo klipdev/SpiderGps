@@ -1,9 +1,20 @@
 package org.klipdev.spidergps;
 
-import java.awt.Point;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class SGDatabase {
+public class SGDatabase implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1950735123746065760L;
+
+	String dbFilename = new String();
+
 	SGTraceLib traceLib   = new SGTraceLib();
 	SGWebOfSegments wps = new SGWebOfSegments();
 	
@@ -11,7 +22,39 @@ public class SGDatabase {
 		
 	}
 	
+	public void save() {
+		File f = new File( dbFilename );
+		ObjectOutputStream oos = null;
 
+		try {
+			if ( !f.exists() ) {
+				f.createNewFile();
+			}
+			oos =  new ObjectOutputStream( new FileOutputStream(f) );
+			oos.writeObject( this ) ;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				if ( oos != null ) {
+					oos.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+			
+		return;
+	}
+	
+	public void saveAs( String fname ) {
+		dbFilename = fname;
+		save();
+		return;
+	}
+	
 	public void addTrace( String filename ) throws Exception {
 		SGTraceDescriptor td = SGTraceDescriptor.NewTraceDescriptor( filename );
 		
