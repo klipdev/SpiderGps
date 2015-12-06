@@ -1,8 +1,10 @@
 package org.klipdev.spidergps;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,15 +15,25 @@ public class SGDatabase implements Serializable {
 	 */
 	private static final long serialVersionUID = 1950735123746065760L;
 
+	private static final int version0 = 0;	// Current version
+	
+	private static final int verHigh = version0;
+	private static final int verLow  = 1;
+	
+	
 	String dbFilename = new String();
 
 	SGTraceLib traceLib   = new SGTraceLib();
-	SGWebOfSegments wps = new SGWebOfSegments();
+	SGWebOfSegments wos = new SGWebOfSegments();
 	
 	public SGDatabase() {
 		
 	}
 	
+	public boolean hasChanged() {
+		// TODO: detect if changes have been saved.
+		return false;
+	}
 	public void save() {
 		File f = new File( dbFilename );
 		ObjectOutputStream oos = null;
@@ -55,6 +67,83 @@ public class SGDatabase implements Serializable {
 		return;
 	}
 	
+	public static SGDatabase open( String fname ) {
+		SGDatabase db = null;
+		File f = new File( fname );
+		ObjectInputStream ois = null;
+		try {
+			if ( !f.exists() ) {
+				SGTools.Log1( null, "Trying to open a file that doesn't exist.");
+				return null;
+			}
+			ois =  new ObjectInputStream( new FileInputStream(f) );
+			db = (SGDatabase) ois.readObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				if ( ois != null ) {
+					ois.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return db;
+	}
+    //-------------------------------------------------------------------------
+
+
+	private  void writeObject(ObjectOutputStream oos)
+	throws IOException {
+		oos.writeLong(serialVersionUID);
+		oos.writeInt(verHigh);
+		oos.writeInt(verLow);
+		
+		// Serialize 'traceLib'
+		oos.writeObject( traceLib );
+
+		// TODO: write 'wos'
+	}
+
+	private  void readObject(ObjectInputStream ois)
+	throws IOException, ClassNotFoundException {
+		long uid = ois.readLong();
+		if ( uid != serialVersionUID ) {
+			// Wronf file type
+			SGTools.Log1(this, "Wrong file type !" );
+
+			// TODO: throw exception
+			return;
+		}
+		
+		int vh = ois.readInt();
+		int vl = ois.readInt();
+		SGTools.Log1(this, "File is version " + vh + "." + vl );
+		if ( vh == version0 ) {
+			readVersion0( ois );
+		} else {
+			SGTools.Log1(this, "Incompatible version !" );
+		}
+	}
+
+	private  void readVersion0(ObjectInputStream ois)
+	throws IOException, ClassNotFoundException {
+		SGTools.Log1(this, "Entering readVersion0()" );
+		
+		// De-serialize 'traceLib'
+		traceLib = (SGTraceLib) ois.readObject();
+
+		// TODO: read 'wos'
+	}
+	
+    //-------------------------------------------------------------------------
+    
 	public void addTrace( String filename ) throws Exception {
 		SGTraceDescriptor td = SGTraceDescriptor.NewTraceDescriptor( filename );
 		

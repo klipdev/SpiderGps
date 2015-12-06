@@ -3,6 +3,10 @@
  */
 package org.klipdev.spidergps;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -10,7 +14,11 @@ import java.util.Locale;
  * @author Christophe
  *
  */
-public class SGPath {
+public class SGPath implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1758677629568458395L;
 	String name;		// Path name
 	SGArea area;
 	
@@ -160,5 +168,44 @@ public class SGPath {
 	String getStatsAsString() {
 		String s = String.format("Name: %s\n  Distance: %.2f km\n  D+: %.0f m\n  D-: %.0f m\n", name, distance, elevationP, elevationN );
 		return s;
+	}
+
+	/*
+	String name;		// Path name
+	SGArea area;
+
+	ArrayList<SGPosition> path;
+	ArrayList<SGPosition> pathSimplified;
+
+	float distance; 	// distance in km;
+	float elevationP;	// positive elevation in meters
+	float elevationN;	// negative elevation in meters
+	*/
+	private  void writeObject(ObjectOutputStream oos)
+	throws IOException {
+		oos.writeLong(serialVersionUID);
+		oos.writeUTF(name);
+		
+		oos.writeFloat( distance   );
+		oos.writeFloat( elevationP );
+		oos.writeFloat( elevationN );
+		
+		oos.writeObject( path );
+		oos.writeObject( pathSimplified );
+	}
+
+	private  void readObject(ObjectInputStream ois)
+	throws IOException, ClassNotFoundException {
+		long iud = ois.readLong();
+		
+		name = ois.readUTF();
+		distance = ois.readFloat();
+		elevationP = ois.readFloat();
+		elevationN = ois.readFloat();
+
+//		area;
+
+		path = (ArrayList<SGPosition>) ois.readObject();
+		pathSimplified = (ArrayList<SGPosition>) ois.readObject();
 	}
 }

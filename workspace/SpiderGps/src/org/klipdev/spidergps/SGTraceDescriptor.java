@@ -1,11 +1,17 @@
 package org.klipdev.spidergps;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 
 // TODO: different class for path and sections ?
-public class SGTraceDescriptor {
+public class SGTraceDescriptor implements Serializable {
+	private static final long serialVersionUID = 3540369068093687501L;
 	public static final int FILETYPE_TCX = 1;
 	public static final int FILETYPE_GPX = 2;
 	public static final int FILETYPE_KML = 3;
@@ -129,5 +135,25 @@ public class SGTraceDescriptor {
 
 	protected void parseFile() {
 		return;
+	}
+	
+	private  void writeObject(ObjectOutputStream oos)
+	throws IOException {
+		oos.writeUTF( name );
+		oos.writeUTF( filenameLong );
+		oos.writeUTF( filenameShort );
+		oos.writeBoolean(showOnMap);
+		oos.writeObject(traceDate);
+		oos.writeObject( path );
+	}
+
+	private  void readObject(ObjectInputStream ois)
+	throws IOException, ClassNotFoundException {
+		name = ois.readUTF();
+		filenameLong = ois.readUTF();
+		filenameShort = ois.readUTF();
+		showOnMap = ois.readBoolean();
+		traceDate = (LocalDateTime) ois.readObject();
+		path = (SGPath) ois.readObject();
 	}
 }

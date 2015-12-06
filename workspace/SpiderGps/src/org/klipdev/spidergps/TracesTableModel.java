@@ -29,6 +29,16 @@ public class TracesTableModel extends AbstractTableModel {
 		this.fireTableDataChanged();
 	}
 */
+	void setNewDatabase( SGDatabase db ) {
+		if ( db != null ) {
+			if (db.traceLib != null ) {
+				fireTableRowsDeleted( 0, traces.size() );
+				traces = db.traceLib.traces;
+//				fireTableDataChanged();
+				fireTableRowsInserted(0, traces.size());
+			}
+		}
+	}
 	
 	//-------------------------------------------------------------------------
 	//-------------------------------------------------------------------------

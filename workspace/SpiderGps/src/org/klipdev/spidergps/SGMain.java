@@ -32,9 +32,10 @@ public class SGMain implements ActionListener, TableModelListener {
 	// THE database ;)
 	SGDatabase db = new SGDatabase();
 
-	final String MenuFileImportFiles = "Import files...";
+	final String MenuFileOpen = "Open";
 	final String MenuFileSave = "Save";
 	final String MenuFileSaveAs = "Save As...";
+	final String MenuFileImportFiles = "Import files...";
 	final String MenuHelpAbout = "About";
 	
 	final String jxBrowserDisclaimer = "SpiderGps uses JxBrowser http://www.teamdev.com/jxbrowser, which is a proprietary software.\nThe use of JxBrowser is governed by JxBrowser Product Licence Agreement http://www.teamdev.com/jxbrowser-licence-agreement.\nIf you would like to use JxBrowser in your development, please contact TeamDev.";
@@ -85,7 +86,7 @@ public class SGMain implements ActionListener, TableModelListener {
  */
 	JMenuBar buildMenuBar() {
 		JMenuBar menuBar;
-		JMenu menu, submenu;
+		JMenu menu;
 		JMenuItem menuItem;
 
 		//Create the menu bar.
@@ -96,6 +97,41 @@ public class SGMain implements ActionListener, TableModelListener {
 		menu = new JMenu("File");
 		menu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(menu);
+
+		// Open
+		menuItem = new JMenuItem(MenuFileOpen);
+		menuItem.addActionListener( new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if ( db.hasChanged() ) {
+					// TODO: ask user to save
+					SGTools.Log1(this, "Database not saved, can't open new file." );
+					return;
+				}
+				
+				JFileChooser chooser = new JFileChooser();
+// TODO: handle default folder from properties
+//				chooser.setCurrentDirectory(new File("/Users/Christophe/Documents/Loisirs/VTT/Historique/2015"));
+				chooser.setMultiSelectionEnabled(false);
+				FileFilter ff = KDTools.NewFileFilter("SpiderGPS File (.sgd)", new String[] { "sgd" } );
+				chooser.addChoosableFileFilter( ff );
+				chooser.setFileFilter(ff);
+				int res = chooser.showOpenDialog(mainFrame);
+				if ( res == JFileChooser.APPROVE_OPTION ) {				
+					File f = chooser.getSelectedFile();
+					SGDatabase dbl = SGDatabase.open(f.getAbsolutePath());
+					if ( dbl != null ) {
+						db = dbl;
+				        //tableModel.fireTableDataChanged();
+						tableModel.setNewDatabase(db);
+					} else {
+						SGTools.Log1( this, "Failed to open file '" + f.getAbsolutePath() + "'" );
+					}
+				}
+				
+				return;
+			}
+		});
+		menu.add(menuItem);
 
 		// Save
 		menuItem = new JMenuItem(MenuFileSave);
@@ -113,7 +149,6 @@ public class SGMain implements ActionListener, TableModelListener {
 					
 					File f = chooser.getSelectedFile();
 					if ( f.exists() ) {
-						JOptionPane.showMessageDialog(null,"Overwrite existing file ?","Spider GPS",JOptionPane.YES_NO_OPTION);
 						int resp = JOptionPane.showConfirmDialog(null, "Overwrite existing file ?" );
 						if ( resp != JOptionPane.YES_OPTION ) {
 							return;
@@ -158,7 +193,6 @@ public class SGMain implements ActionListener, TableModelListener {
 		             //String path = file.getPath().replace('\\', '/');
 		             //System.out.println(path);
 		        }
-		        tableModel.fireTableDataChanged();
 			}
 		});
 		menu.add(menuItem);
@@ -192,7 +226,7 @@ public class SGMain implements ActionListener, TableModelListener {
 		// TST
    	 	try {
 //			db.addTrace("/Users/Christophe/0miniere.tcx");
-			db.addTrace("/Users/Christophe/1testmerge.tcx");
+//			db.addTrace("/Users/Christophe/1testmerge.tcx");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
